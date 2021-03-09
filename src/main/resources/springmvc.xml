@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--扫描控制层的包-->
+    <context:component-scan base-package="com.zrs.controller"/>
+
+    <!--视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--配置视图的前缀-->
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <!--配置视图的后缀-->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- 配置类型转换器工厂 -->
+    <bean id="converterService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <!-- 给工厂注入一个新的类型转换器 -->
+        <property name="converters">
+            <array>
+                <!-- 配置自定义类型转换器 -->
+                <bean class="com.zrs.converter.StringToDateConverter"/>
+            </array>
+        </property>
+    </bean>
+
+    <!-- 引用自定义类型转换器 -->
+    <mvc:annotation-driven conversion-service="converterService"/>
+
+    <!-- location 表示路径，mapping 表示文件，**表示该目录下的文件以及子目录的文件 -->
+
+    <mvc:resources location="/static/" mapping="/static/**"/>
+
+    <!-- 配置使用SimpleMappingExceptionResolver来映射异常 -->
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <!-- 给异常命名一个别名 -->
+        <property name="exceptionAttribute" value="ex"/>
+        <property name="exceptionMappings">
+            <props>
+                <!-- 一定要异常的全类名。 表示出现ArrayIndexOutOfBoundsException异常，就跳转到error.jsp视图 -->
+                <prop key="java.lang.ArrayIndexOutOfBoundsException">error</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>
